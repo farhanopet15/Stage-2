@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+  "rootDir": "./src",
+  "target": "es2016",
+  "module": "commonjs",
+  "esModuleInterop": true,
+  "forceConsistentCasingInFileNames": true,
+  "strict": false,
+  "skipLibCheck": true
+  },
+  "include": ["src/types/express.d.ts"] // Pastikan baris ini ada
+}
