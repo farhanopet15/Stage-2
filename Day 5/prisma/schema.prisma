@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Product {
+  id    Int     @id @default(autoincrement())
+  title String
+  price Int
+  carts Cart[]
+  stocks   SupplierStock[] 
+}
+
+
+model User {
+  id        Int     @id @default(autoincrement())
+  name      String
+  email     String?  @unique
+  profile   String?
+  password  String?
+  role      String  @default("user")
+  points    Int     @default(100)  
+
+  carts     Cart[]
+  sentTransfers     PointTransaction[] @relation("SentTransfers")
+  receivedTransfers PointTransaction[] @relation("ReceivedTransfers")
+}
+
+model Cart {
+  id        Int     @id @default(autoincrement())
+  quantity  Int
+  userId    Int
+  productId Int
+  user      User    @relation(fields: [userId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+
+model PointTransaction {
+  id          Int   @id @default(autoincrement())
+  senderId    Int
+  receiverId  Int
+  amount      Int
+  createdAt   DateTime @default(now())
+
+  fromUser    User @relation("SentTransfers", fields: [senderId], references: [id])
+  toUser      User @relation("ReceivedTransfers", fields: [receiverId], references: [id])
+}
+
+model Supplier {
+  id        Int             @id @default(autoincrement())
+  email     String          @unique
+  profile   String
+  password  String        
+  name      String
+  stocks    SupplierStock[]
+}
+
+model SupplierStock {
+  id         Int    @id @default(autoincrement())
+  supplierId Int
+  productId  Int
+  stock      Int    @default(0)
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id])
+
+  @@unique([productId, supplierId])
+}
